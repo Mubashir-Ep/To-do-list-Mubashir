@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="Mubashir">
+    <title>Enhanced To-Do List</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899, #facc15, #14b8a6);
+            background-size: 800%;
+            animation: colorShift 30s ease infinite;
+            position: relative;
+            overflow-x: hidden;
+            color: #1f2937;
+        }
+        @keyframes colorShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .background-image {
+            position: absolute;
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .bg-checklist {
+            top: 20%;
+            left: 10%;
+            width: 25%;
+            max-width: 300px;
+        }
+        .bg-checklist .checkmark {
+            transform-origin: center;
+            animation: checkTask 4s ease-in-out infinite;
+        }
+        @keyframes checkTask {
+            0%, 80% { transform: scale(0); opacity: 0; }
+            10%, 70% { transform: scale(1); opacity: 1; }
+        }
+        .bg-calendar {
+            bottom: 15%;
+            right: 10%;
+            width: 20%;
+            max-width: 250px;
+        }
+        .bg-calendar .calendar-page {
+            transform-origin: top;
+            animation: flipPage 5s ease-in-out infinite;
+        }
+        @keyframes flipPage {
+            0%, 80% { transform: rotateY(0); }
+            20%, 60% { transform: rotateY(90deg); }
+        }
+        .bg-pencil {
+            top: 60%;
+            left: 80%;
+            width: 15%;
+            max-width: 200px;
+        }
+        .bg-pencil .pencil-tip {
+            transform-origin: bottom left;
+            animation: writeTask 3s ease-in-out infinite;
+        }
+        @keyframes writeTask {
+            0%, 100% { transform: rotate(0); }
+            50% { transform: rotate(-10deg); }
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            padding: 2.5rem 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        .card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.15));
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            padding: 2.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+        }
+        .task-item {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: bounceIn 0.6s ease forwards;
+            position: relative;
+        }
+        .task-item.completed::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="%2314b8a6"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg>') no-repeat center;
+            background-size: 40px;
+            opacity: 0;
+            animation: flashCheck 1s ease;
+        }
+        @keyframes flashCheck {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 0.5; }
+        }
+        .task-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: translateY(30px); }
+            60% { opacity: 1; transform: translateY(-10px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .completed {
+            text-decoration: line-through;
+            color: #9ca3af;
+        }
+        .btn {
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+        .btn:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        }
+        .btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 12px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .btn:hover::after {
+            opacity: 1;
+        }
+        input[type="checkbox"] {
+            accent-color: #14b8a6;
+            width: 1.5rem;
+            height: 1.5rem;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        h1 {
+            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+        }
+        .input-gradient {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.7));
+            transition: box-shadow 0.3s ease;
+        }
+        .input-gradient:focus {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+        }
+        @media (max-width: 640px) {
+            .container {
+                padding: 1.5rem 0.75rem;
+            }
+            .card {
+                padding: 1.75rem;
+            }
+            .background-image {
+                width: 30% !important;
+            }
+            .bg-checklist { top: 10%; left: 5%; }
+            .bg-calendar { bottom: 10%; right: 5%; }
+            .bg-pencil { top: 50%; left: 75%; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Inline SVG Images -->
+    <!-- Checklist with Checkmark -->
+    <svg class="background-image bg-checklist" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+        <path d="M464 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V80c0-26.51-21.49-48-48-48zm0 400H48V80h416v352zM208 384h-48c-8.84 0-16-7.16-16-16s7.16-16 16-16h48c8.84 0 16 7.16 16 16s-7.16 16-16 16zm160 0h-48c-8.84 0-16-7.16-16-16s7.16-16 16-16h48c8.84 0 16 7.16 16 16s-7.16 16-16 16zm-160-96h-48c-8.84 0-16-7.16-16-16s7.16-16 16-16h48c8.84 0 16 7.16 16 16s-7.16 16-16 16zm160 0h-48c-8.84 0-16-7.16-16-16s7.16-16 16-16h48c8.84 0 16 7.16 16 16s-7.16 16-16 16zm-160-96h-48c-8.84 0-16-7.16-16-16s7.16-16 16-16h48c8.84 0 16 7.16 16 16s-7.16 16-16 16zm160 0h-48c-8.84 0-16-7.16-16-16s7.16-16 16-16h48c8.84 0 16 7.16 16 16s-7.16 16-16 16z" fill="#ffffff"/>
+        <path class="checkmark" d="M180 320l-40 40 80 80 160-160-40-40-120 120z" fill="#14b8a6"/>
+    </svg>
+    <!-- Calendar with Flipping Page -->
+    <svg class="background-image bg-calendar" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+        <path d="M464 32H48C21.49 32 0 53.49 0 80v352c0 26.51 21.49 48 48 48h416c26.51 0 48-21.49 48-48V80c0-26.51-21.49-48-48-48zm0 400H48V80h416v352z" fill="#ffffff"/>
+        <g class="calendar-page">
+            <path d="M128 128h-32v-32h32v32zm128 0h-32v-32h32v32zm128 0h-32v-32h32v32zM96 256H64v-32h32v32zm128 0h-32v-32h32v32zm128 0h-32v-32h32v32zm-256 96H64v-32h32v32zm128 0h-32v-32h32v32zm128 0h-32v-32h32v32z" fill="#ffffff"/>
+        </g>
+    </svg>
+    <!-- Pencil with Writing Animation -->
+    <svg class="background-image bg-pencil" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+        <g class="pencil-tip">
+            <path d="M497.94 74.18l-60.12-60.12c-18.75-18.75-49.16-18.75-67.88 0L313.38 70.62l-30.72 30.72-184.96 184.96c-3.52 3.52-5.76 8.32-6.24 13.44l-12 96c-.64 5.12 1.28 10.24 5.12 14.08 3.84 3.84 8.96 5.76 14.08 5.12l96-12c5.12-.48 9.92-2.72 13.44-6.24l184.96-184.96 30.72-30.72 60.12 60.12c18.72 18.72 18.72 49.16 0 67.88l-67.88 67.88 33.92 33.92 67.88-67.88c37.44-37.44 37.44-98.28 0-135.76zM160.06 352.06l-67.88 8.48 8.48-67.88 147.2-147.2 51.2 51.2-139.2 155.4z" fill="#ffffff"/>
+        </g>
+    </svg>
+
+    <main class="container">
+        <section class="text-center mb-10">
+            <img src="https://img.icons8.com/color/80/000000/checklist.png" alt="Checklist Icon" class="mx-auto mb-4" width="80" height="80">
+            <h1 class="text-5xl font-extrabold text-white">TaskMaster</h1>
+            <svg class="mx-auto mt-2 w-32 h-6" viewBox="0 0 200 20" xmlns="http://www.w3.org/2000/svg">
+                <path d="M0 10c20 10 40 10 60 0s40-10 60 0 40 10 60 0 40-10 60 0" stroke="#ffffff" stroke-width="4" fill="none" opacity="0.7"/>
+            </svg>
+        </section>
+
+        <section class="card mb-10">
+            <form action="{{ url_for('add') }}" method="POST" class="space-y-6">
+                <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+                    <input 
+                        type="text" 
+                        name="task" 
+                        placeholder="Add a new task..." 
+                        required 
+                        class="input-gradient flex-1 p-4 border border-transparent rounded-2xl focus:ring-0 focus:outline-none placeholder-gray-400 text-lg"
+                    >
+                    <button 
+                        type="submit" 
+                        class="btn bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-8 py-4 rounded-2xl hover:from-indigo-600 hover:to-purple-700"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Add Task
+                    </button>
+                </div>
+                <div class="flex flex-col sm:flex-row sm:space-x-4 space-y-4 sm:space-y-0">
+                    <input 
+                        type="date" 
+                        name="start_date" 
+                        required 
+                        class="input-gradient w-full sm:w-1/2 p-4 border border-transparent rounded-2xl focus:ring-0 focus:outline-none text-lg"
+                    >
+                    <input 
+                        type="date" 
+                        name="end_date" 
+                        required 
+                        class="input-gradient w-full sm:w-1/2 p-4 border border-transparent rounded-2xl focus:ring-0 focus:outline-none text-lg"
+                    >
+                </div>
+            </form>
+        </section>
+
+        <section>
+            <ul class="space-y-5">
+                {% for todo in todos %}
+                <li class="card task-item flex items-center justify-between {% if todo[2] %}completed{% endif %}">
+                    <div class="flex items-center space-x-5">
+                        <input 
+                            type="checkbox" 
+                            {% if todo[2] %}checked{% endif %} 
+                            onclick="window.location.href='{{ url_for('complete', id=todo[0]) }}'" 
+                            class="rounded"
+                        >
+                        <div class="flex items-center space-x-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                            </svg>
+                            <div>
+                                <p class="{% if todo[2] %}completed{% endif %} text-xl font-semibold">
+                                    {{ todo[1] }}
+                                </p>
+                                <p class="text-sm text-gray-600 mt-1">
+                                    <span>Start: {{ todo[3] | strftime('%m/%d/%Y') }}</span> | 
+                                    <span>End: {{ todo[4] | strftime('%m/%d/%Y') }}</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex space-x-4">
+                        {% if not todo[2] %}
+                        <a href="{{ url_for('complete', id=todo[0]) }}"
+                           class="btn bg-teal-500 text-white px-5 py-3 rounded-xl hover:bg-teal-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                            </svg>
+                            Done
+                        </a>
+                        {% endif %}
+                        <a href="{{ url_for('delete', id=todo[0]) }}"
+                           class="btn bg-pink-500 text-white px-5 py-3 rounded-xl hover:bg-pink-600"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd" />
+                            </svg>
+                            Delete
+                        </a>
+                    </div>
+                </li>
+                {% else %}
+                <div class="card text-center p-8">
+                    <svg class="mx-auto mb-4" width="100" height="100" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M256 32C132.3 32 32 132.3 32 256s100.3 224 224 224 224-100.3 224-224S379.7 32 256 32zm112 304h-48v48h-48v-48H208v-48h48v-48h48v48h48v48zm-112-176c-17.67 0-32 14.33-32 32s14.33 32 32 32 32-14.33 32-32-14.33-32-32-32z" fill="#ec4899"/>
+                    </svg>
+                    <p class="text-white text-xl font-medium">No tasks yet! Add one to get started.</p>
+                </div>
+                {% endfor %}
+            </ul>
+        </section>
+        <footer class="text-center mt-10 text-white">
+            <p>Developed by Mubashir</p>
+        </footer>
+    </main>
+</body>
+</html>
